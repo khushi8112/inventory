@@ -1,0 +1,102 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "field:item_code",
+    "creation": "2024-02-08 10:59:08.807724",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+     "item_code",
+     "opening_warehouse",
+     "opening_qty",
+     "column_break_iogd",
+     "name1",
+     "opening_rate",
+     "amended_from",
+     "section_break_vsmw",
+     "description"
+    ],
+    "fields": [
+     {
+      "fieldname": "item_code",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Item Code",
+      "reqd": 1,
+      "unique": 1
+     },
+     {
+      "fieldname": "name1",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Item Name",
+      "reqd": 1,
+      "unique": 1
+     },
+     {
+      "fieldname": "opening_warehouse",
+      "fieldtype": "Link",
+      "label": "Opening Warehouse",
+      "options": "Warehouse"
+     },
+     {
+      "fieldname": "opening_qty",
+      "fieldtype": "Int",
+      "label": "Opening Qty"
+     },
+     {
+      "fieldname": "opening_rate",
+      "fieldtype": "Int",
+      "label": "Opening Rate"
+     },
+     {
+      "fieldname": "description",
+      "fieldtype": "Text Editor",
+      "label": "Description"
+     },
+     {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "no_copy": 1,
+      "options": "Item",
+      "print_hide": 1,
+      "read_only": 1,
+      "search_index": 1
+     },
+     {
+      "fieldname": "column_break_iogd",
+      "fieldtype": "Column Break"
+     },
+     {
+      "fieldname": "section_break_vsmw",
+      "fieldtype": "Section Break"
+     }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2024-02-19 16:38:05.366051",
+    "modified_by": "Administrator",
+    "module": "Inventory",
+    "name": "Item",
+    "naming_rule": "By fieldname",
+    "owner": "Administrator",
+    "permissions": [
+     {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+     }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "title_field": "name1"
+   }
