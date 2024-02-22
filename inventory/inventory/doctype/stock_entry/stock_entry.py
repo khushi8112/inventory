@@ -13,15 +13,14 @@ class StockEntry(Document):
 	# Validating if required feild have the data based on Stock Entry Type
 	def validate_item(self,item):
 		if self.type == "Receive":
-			if item.target_warehouse is None:
+			if not item.target_warehouse:
 				frappe.throw("Target warehouse is required.")
 		elif self.type == "Transfer":
-			if item.target_warehouse is None or item.source_warehouse is None :
+			if not item.target_warehouse or not item.source_warehouse :
 				frappe.throw("Target warehouse and Source Warehouse both are required.")
 		else:
-			if item.source_warehouse is None:
+			if not item.source_warehouse :
 				frappe.throw("Source Warehouse is required")
-
 
 
 	def on_submit(self):
@@ -31,6 +30,17 @@ class StockEntry(Document):
 			self.stock_transfer_sle()
 		else:
 			self.stock_consume_sle()
+
+
+	def on_cancel(self):
+		if self.type == "Receive":
+			print(22222)
+			print(self.type)
+			self.stock_receive_cancel_entry()
+		elif self.type == "Transfer":
+			self.stock_transfer_cancel_entry()
+		else:
+			self.stock_consume_cancel_entry()
 
 
 
@@ -99,6 +109,65 @@ class StockEntry(Document):
 			qty_change = int(entry.quantity)
 			self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)
 
+	def stock_receive_cancel_entry(self):
+		for entry in self.items:
+			item = entry.item_name
+			warehouse = entry.target_warehouse
+			total = self.get_totals(item,warehouse)
+			
+			total_qty = total[0]['total_qty']
+			print(total_qty)
+			if total_qty < int(entry.quantity):
+				frappe.throw(f"Items at index {entry.idx} got consumed! ")
+
+			valuation = (total[0]['total_value'] - (int(entry.quantity) * int(entry.item_rate))) / (total_qty - int(entry.quantity))
+			posting_date = self.date
+			posting_time = self.time
+			inout_rate = entry.item_rate
+			qty_change = -1 * int(entry.quantity)
+			self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)
+
+	def stock_consume_cancel_entry(self):
+		for entry in self.items:
+			item = entry.item_name
+			warehouse = entry.source_warehouse
+			total = self.get_totals(item,warehouse)
+			total_qty = total[0]['total_qty']
+			valuation = (total[0]['total_value'] + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
+			posting_date = self.date
+			posting_time = self.time
+			inout_rate = entry.item_rate
+			qty_change = int(entry.quantity)
+			self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)
+
+	def stock_transfer_cancel_entry(self):
+		for entry in self.items:
+			# First Need to check if stock is still there or got consumed at target warehouse 
+			item = entry.item_name
+			warehouse = entry.target_warehouse
+			total = self.get_totals(item,warehouse)
+			total_qty = total[0]['total_qty']
+			if total_qty < int(entry.quantity):
+				frappe.throw(f"Can't cancel this entry! Items at index {entry.idx} got consumed.")
+
+			valuation = (total[0]['total_value'] - (int(entry.quantity) * int(entry.item_rate))) / (total_qty - int(entry.quantity))
+			posting_date = self.date
+			posting_time = self.time
+			inout_rate = entry.item_rate
+			qty_change = -1 * int(entry.quantity)
+			self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)
+
+
+			item = entry.item_name
+			warehouse = entry.source_warehouse
+			total = self.get_totals(item,warehouse)
+			total_qty = total[0]['total_qty']
+			valuation = (total[0]['total_value'] + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
+			posting_date = self.date
+			posting_time = self.time
+			inout_rate = entry.item_rate
+			qty_change = int(entry.quantity)
+			self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)	
 
 
 	def get_totals(self,item,warehouse):
@@ -109,14 +178,13 @@ class StockEntry(Document):
 					},
     				fields = ['SUM(quantity_change) as total_qty','SUM(quantity_change * inout_rate) as total_value']
 		)
-		if total[0]['total_qty'] is None :
+		if not total[0]['total_qty']:
 			total[0]['total_qty'] = 0
-		if total[0]['total_value'] is None :
+		if not total[0]['total_value']:
 			total[0]['total_value'] = 0
 
 		return total
 	
-
 	# Method to Create stock ledger entry 
 	def insert_sle_entry(self,item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation):
 		doc = frappe.get_doc({
@@ -129,8 +197,5 @@ class StockEntry(Document):
 			'inout_rate' : inout_rate,
 			'valuation_rate' : valuation
 		})
-		# print(doc.as_dict())
 		doc.insert()
-		# print(doc.docstatus)
-		
-		
+	
