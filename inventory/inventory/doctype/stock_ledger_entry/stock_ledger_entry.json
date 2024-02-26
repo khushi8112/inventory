@@ -1,87 +1,93 @@
 {
-    "actions": [],
-    "allow_rename": 1,
-    "autoname": "SLE-.MM.-.DD.-.#####.",
-    "creation": "2024-02-20 10:30:30.500112",
-    "doctype": "DocType",
-    "engine": "InnoDB",
-    "field_order": [
-     "item_name",
-     "warehouse_name",
-     "posting_date",
-     "posting_time",
-     "column_break_drnf",
-     "quantity_change",
-     "inout_rate",
-     "valuation_rate"
-    ],
-    "fields": [
-     {
-      "fieldname": "item_name",
-      "fieldtype": "Link",
-      "label": "Item Name",
-      "options": "Item"
-     },
-     {
-      "fieldname": "warehouse_name",
-      "fieldtype": "Link",
-      "label": "Warehouse Name",
-      "options": "Warehouse"
-     },
-     {
-      "fieldname": "posting_date",
-      "fieldtype": "Date",
-      "label": "Posting Date"
-     },
-     {
-      "fieldname": "posting_time",
-      "fieldtype": "Time",
-      "label": "Posting Time"
-     },
-     {
-      "fieldname": "quantity_change",
-      "fieldtype": "Data",
-      "label": "Quantity Change"
-     },
-     {
-      "fieldname": "inout_rate",
-      "fieldtype": "Data",
-      "label": "In/Out Rate"
-     },
-     {
-      "fieldname": "valuation_rate",
-      "fieldtype": "Data",
-      "label": "Valuation Rate"
-     },
-     {
-      "fieldname": "column_break_drnf",
-      "fieldtype": "Column Break"
-     }
-    ],
-    "in_create": 1,
-    "index_web_pages_for_search": 1,
-    "links": [],
-    "modified": "2024-02-20 17:33:49.657403",
-    "modified_by": "Administrator",
-    "module": "Inventory",
-    "name": "Stock Ledger Entry",
-    "naming_rule": "Expression (old style)",
-    "owner": "Administrator",
-    "permissions": [
-     {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-     }
-    ],
-    "sort_field": "modified",
-    "sort_order": "DESC",
-    "states": []
-   }
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SLE-.MM.-.DD.-.#####.",
+ "creation": "2024-02-20 10:30:30.500112",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "item_name",
+  "warehouse_name",
+  "posting_date",
+  "posting_time",
+  "column_break_drnf",
+  "quantity_change",
+  "inout_rate",
+  "valuation_rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item Name",
+   "options": "Item"
+  },
+  {
+   "fieldname": "warehouse_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Warehouse Name",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time"
+  },
+  {
+   "fieldname": "quantity_change",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Quantity Change"
+  },
+  {
+   "fieldname": "inout_rate",
+   "fieldtype": "Data",
+   "label": "In/Out Rate"
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Data",
+   "label": "Valuation Rate"
+  },
+  {
+   "fieldname": "column_break_drnf",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "in_create": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-02-23 18:26:41.135795",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Stock Ledger Entry",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
