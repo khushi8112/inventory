@@ -60,23 +60,23 @@ class StockEntry(Document):
 		total = self.get_totals(item,warehouse)
 		total_qty = total['total_qty']
 		total_value = total['total_value']
-
+		quantity = cint(entry.quantity)
 		if type == "Receive":
 			valuation = (total_value + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
 
 		elif type == "Consume":
 			if int(entry.quantity) > total_qty:
 				frappe.throw("Stock unavailable!")
-			entry.quantity = -1 * cint(entry.quantity)
-			if total_qty + entry.quantity == 0:
+			quantity = -1 * quantity
+			if total_qty + quantity == 0:
 				valuation = 0
 			else:
-				valuation = (total_value + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
+				valuation = (total_value + quantity * int(entry.item_rate)) / (total_qty + quantity)
 
 		posting_date = self.date
 		posting_time = self.time
 		inout_rate = entry.item_rate
-		qty_change = int(entry.quantity)
+		qty_change = quantity
 		self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)
 
 	def create_cancel_entry(self,entry,warehouse,type):
@@ -84,27 +84,27 @@ class StockEntry(Document):
 		total = self.get_totals(item,warehouse)
 		total_qty = total['total_qty']
 		total_value = total['total_value']
-		entry.quantity = -1 * cint(entry.quantity)
+		quantity = cint(entry.quantity)
 		if type == "Receive":
 			if int(entry.quantity) > total_qty:
 				frappe.throw(f"Items at index {entry.idx} got consumed! ")
-			if total_qty + entry.quantity == 0:
+			quantity = -1 * quantity
+			if total_qty + quantity == 0:
 				valuation = 0
 			else:
-				valuation = (total_value + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
+				valuation = (total_value + (quantity * int(entry.item_rate))) / (total_qty + quantity)
 		else:
-			valuation = (total_value + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
+			valuation = (total_value + (quantity * int(entry.item_rate))) / (total_qty + quantity)
 
 		posting_date = self.date
 		posting_time = self.time
 		inout_rate = entry.item_rate
-		qty_change = int(entry.quantity)
+		qty_change = quantity
 		self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation)
 
 	def get_totals(self,item,warehouse):
 		total_quantity = 0
 		total_value = 0
-
 		totals = frappe.db.get_all("Stock Ledger Entry", {
 			"item_name": item,
 			"warehouse_name": warehouse
