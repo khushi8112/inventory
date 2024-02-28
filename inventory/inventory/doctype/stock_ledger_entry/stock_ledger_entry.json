@@ -14,7 +14,9 @@
   "column_break_drnf",
   "quantity_change",
   "inout_rate",
-  "valuation_rate"
+  "valuation_rate",
+  "voucher_type",
+  "voucher_name"
  ],
  "fields": [
   {
@@ -62,12 +64,24 @@
   {
    "fieldname": "column_break_drnf",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Link",
+   "label": "Voucher Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "voucher_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Voucher Name",
+   "options": "voucher_type"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-23 18:26:41.135795",
+ "modified": "2024-02-28 11:20:38.940455",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Stock Ledger Entry",

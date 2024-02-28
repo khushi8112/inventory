@@ -15,7 +15,6 @@ class Item(Document):
 
 	def create_stock_entry(self):
 		se_doc = frappe.new_doc("Stock Entry")
-		print(type(se_doc.items))
 		se_doc.date = today()
 		se_doc.time = datetime.now().strftime('%H:%M:%S')
 		se_doc.type = "Receive"

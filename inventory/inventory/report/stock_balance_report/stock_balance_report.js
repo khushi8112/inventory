@@ -3,6 +3,11 @@
 
 frappe.query_reports["Stock Balance Report"] = {
 	"filters": [
-
+        {
+            fieldname: "posting_date",
+            label: __("Date"),
+            fieldtype: "Date",
+            options: "Stock Ledger Entry",
+        }
 	]
 };

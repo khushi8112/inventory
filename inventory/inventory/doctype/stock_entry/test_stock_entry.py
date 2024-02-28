@@ -3,8 +3,7 @@
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import today,datetime
-from frappe.utils import today
+from frappe.utils import today,datetime,flt
 from datetime import datetime
 
 class TestStockEntry(FrappeTestCase):
@@ -66,7 +65,8 @@ class TestStockEntry(FrappeTestCase):
         doc = self.create_stock_entry("Test","Mumbai","Receive",10,30).submit()
         doc.cancel()
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
-        self.assertEqual(round(float(latest_doc.valuation_rate),2),13.33)
+        # self.assertEqual(round(float(latest_doc.valuation_rate),2),13.33)
+        self.assertEqual(flt(latest_doc.valuation_rate),13.33)
 
     def create_stock_entry(self,item,warehouse,type,qty,rate):
         se_doc = frappe.new_doc("Stock Entry")
@@ -102,9 +102,6 @@ class TestStockEntry(FrappeTestCase):
                 }
             )
         se_doc.save()
-
-        # se_doc.insert()
-        # se_doc.submit()
         return se_doc
     
     def create_warehouse(self,warehouse):
@@ -125,4 +122,3 @@ class TestStockEntry(FrappeTestCase):
             doc.opening_rate = '22222'
             doc.opening_qty = '12'
             doc.save()
-            # frappe.db.commit()
