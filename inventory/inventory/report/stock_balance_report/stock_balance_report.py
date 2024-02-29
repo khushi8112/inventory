@@ -52,7 +52,6 @@ def get_columns():
 
 def get_data(filters):
 	query_filters = {}
-
 	if filters.posting_date:
 		query_filters["posting_date"] = filters["posting_date"]
 	else:
