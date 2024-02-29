@@ -10,8 +10,6 @@ class Item(Document):
 	
 	def after_insert(self):
 		self.create_stock_entry()
-		# self.insert_sle_entry()
-
 
 	def create_stock_entry(self):
 		se_doc = frappe.new_doc("Stock Entry")
@@ -29,15 +27,4 @@ class Item(Document):
 		se_doc.insert()
 		se_doc.submit()
 
-
-	def insert_sle_entry(self):
-		sle_doc = frappe.new_doc("Stock Ledger Entry")
-		sle_doc.item_name = self.name
-		sle_doc.warehouse_name  = self.opening_warehouse
-		sle_doc.posting_date = today()
-		sle_doc.posting_time = datetime.now().strftime('%H:%M:%S')
-		sle_doc.quantity_change = self.opening_qty
-		sle_doc.inout_rate = self.opening_rate
-		sle_doc.valuation_rate = self.opening_rate
-		sle_doc.insert()
 

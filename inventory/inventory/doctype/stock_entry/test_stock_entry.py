@@ -54,21 +54,22 @@ class TestStockEntry(FrappeTestCase):
         self.assertRaises(frappe.ValidationError,doc.submit)
 
     def test_valuation(self):
-        doc = self.create_stock_entry("Test","Mumbai","Receive",8,10).submit()
-        doc = self.create_stock_entry("Test","Mumbai","Receive",4,20).submit()
+        doc = self.create_stock_entry("Main Item", "Main", "Receive", 8, 10).submit()
+        doc = self.create_stock_entry("Main Item", "Main", "Receive", 4, 20).submit()
         doc = frappe.get_last_doc("Stock Ledger Entry")
+
         self.assertEqual(round(float(doc.valuation_rate),2),13.33)
 
     def test_on_cancel_valuation(self):
-        doc = self.create_stock_entry("Test","Mumbai","Receive",8,10).submit()
-        doc = self.create_stock_entry("Test","Mumbai","Receive",4,20).submit()
-        doc = self.create_stock_entry("Test","Mumbai","Receive",10,30).submit()
+        doc = self.create_stock_entry("Test", "Mumbai", "Receive", 8, 10).submit()
+        doc = self.create_stock_entry("Test", "Mumbai", "Receive", 4, 20).submit()
+        doc = self.create_stock_entry("Test", "Mumbai", "Receive", 10, 30).submit()
         doc.cancel()
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
         # self.assertEqual(round(float(latest_doc.valuation_rate),2),13.33)
-        self.assertEqual(flt(latest_doc.valuation_rate),13.33)
+        self.assertEqual(flt(latest_doc.valuation_rate), 13.33)
 
-    def create_stock_entry(self,item,warehouse,type,qty,rate):
+    def create_stock_entry(self, item, warehouse, type, qty, rate):
         se_doc = frappe.new_doc("Stock Entry")
         se_doc.date = today()
         se_doc.time = datetime.now().strftime('%H:%M:%S')
@@ -104,7 +105,7 @@ class TestStockEntry(FrappeTestCase):
         se_doc.save()
         return se_doc
     
-    def create_warehouse(self,warehouse):
+    def create_warehouse(self, warehouse):
         if not frappe.db.exists("Warehouse", warehouse):
             doc = frappe.new_doc("Warehouse")
             doc.is_group = True
@@ -113,7 +114,7 @@ class TestStockEntry(FrappeTestCase):
             doc.contact = '1234567890'
             doc.save()
 
-    def create_item(self,item,warehouse):
+    def create_item(self, item, warehouse):
         if not frappe.db.exists("Item", item):
             doc = frappe.new_doc("Item")
             doc.item_code = item

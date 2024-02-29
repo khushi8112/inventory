@@ -13,32 +13,39 @@ def execute(filters=None):
 def get_columns():
 	columns = [
 		{
-            'fieldname' : 'item_name',
-            'label' : _('Item Name'),
-            'fieldtype' : 'Link',
-            'options' : 'Stock Ledger Entry',
-			'width': 150
+            'fieldname': 'item_name',
+            'label': _('Item Name'),
+            'fieldtype': 'Link',
+            'options': 'Stock Ledger Entry',
+			'width': 200,
         },
 		{
-            'fieldname' : 'warehouse_name',
-            'label' : _('Warehouse'),
-            'fieldtype' : 'Link',
-            'options' : 'Stock Ledger Entry',
-			'width': 150
+            'fieldname': 'warehouse_name',
+            'label': _('Warehouse'),
+            'fieldtype': 'Link',
+            'options': 'Stock Ledger Entry',
+			'width': 200,
         },
 		{
-            'fieldname' : 'available_qty',
-            'label' : _('Available Quantity'),
-            'fieldtype' : 'Data',
-            'options' : 'Stock Ledger Entry',
-			'width': 150
+            'fieldname': 'available_qty',
+            'label': _('Available Quantity'),
+            'fieldtype': 'Data',
+            'options': 'Stock Ledger Entry',
+			'width': 200
         },
 		{
-            'fieldname' : 'valuation_rate',
-            'label' : _('Valuation Rate'),
-            'fieldtype' : 'Data',
-            'options' : 'Stock Ledger Entry',
-			'width': 150
+            'fieldname': 'inout_rate',
+            'label': _('In-Out Rate'),
+            'fieldtype': 'Data',
+            'options': 'Stock Ledger Entry',
+			'width': 200
+        },
+		{
+            'fieldname': 'valuation_rate',
+            'label': _('Valuation'),
+            'fieldtype': 'Data',
+            'options': 'Stock Ledger Entry',
+			'width': 200
         }
 	]
 	return columns
@@ -53,15 +60,15 @@ def get_data(filters):
 	
 	data = frappe.db.get_all("Stock Ledger Entry", {
         "posting_date": ['<=', query_filters["posting_date"]]
-        },[
+        }, [
         "SUM(quantity_change) as available_qty",
         'item_name', 
         'warehouse_name', 
         'posting_date', 
         'inout_rate', 
-        'quantity_change', 
+        'quantity_change',  
         'valuation_rate'
         ],
-    group_by='item_name')
-	print(data)
+    group_by = "item_name, warehouse_name"
+	)
 	return data

@@ -7,102 +7,81 @@ from frappe.utils import cint,flt
 
 class StockEntry(Document):
 
-	def before_save(self):
+	def validate(self):
 		for item in self.items:
 			self.validate_item(item)
 
-	# Validating if required feild have the data based on Stock Entry Type
-	def validate_item(self,item):
-		if self.type == "Receive":
-			if not item.target_warehouse:
-				frappe.throw("Target warehouse is required.")
-		elif self.type == "Transfer":
-			if not item.target_warehouse or not item.source_warehouse :
-				frappe.throw("Target warehouse and Source Warehouse both are required.")
-		else:
-			if not item.source_warehouse :
-				frappe.throw("Source Warehouse is required")
-
+	def validate_item(self, item):
+		if self.type == "Receive" and not item.target_warehouse:
+			frappe.throw("Target warehouse is required.")
+		elif self.type == "Transfer" and ( not item.target_warehouse or not item.source_warehouse):
+			frappe.throw("Target warehouse and Source Warehouse both are required.")
+		elif self.type == "Consume" and not item.source_warehouse:
+			frappe.throw("Source Warehouse is required")
 
 	def on_submit(self):
-		if self.type == "Receive":
-			for entry in self.items:
-				self.create_stock_ledger(entry,entry.target_warehouse,self.type)
-		elif self.type == "Transfer":
-			for entry in self.items:
-				self.create_stock_ledger(entry,entry.target_warehouse,"Receive")
-				self.create_stock_ledger(entry,entry.source_warehouse,"Consume")
-		else:
-			for entry in self.items:
-				self.create_stock_ledger(entry,entry.source_warehouse,self.type)
-
+		for entry in self.items:
+			if self.type == "Receive":
+				self.create_stock_ledger(entry, entry.target_warehouse, self.type)
+			elif self.type == "Transfer":
+				self.create_stock_ledger(entry, entry.target_warehouse, "Receive")
+				self.create_stock_ledger(entry, entry.source_warehouse, "Consume")
+			else:
+				self.create_stock_ledger(entry, entry.source_warehouse, self.type)
 
 	def on_cancel(self):
-		if self.type == "Receive":
-			for entry in self.items:
-				self.create_cancel_entry(entry,entry.target_warehouse,self.type)
-		elif self.type == "Transfer":
-			for entry in self.items:
-				self.create_cancel_entry(entry,entry.target_warehouse,"Receive")
-				self.create_cancel_entry(entry,entry.source_warehouse,"Consume")
-		else:
-			for entry in self.items:
-				self.create_cancel_entry(entry,entry.source_warehouse,self.type)
+		for entry in self.items:
+			if self.type == "Receive":
+				self.create_cancel_entry(entry, entry.target_warehouse, self.type)
+			elif self.type == "Transfer":
+				self.create_cancel_entry(entry, entry.target_warehouse, "Receive")
+				self.create_cancel_entry(entry, entry.source_warehouse, "Consume")
+			else:
+				self.create_cancel_entry(entry, entry.source_warehouse, self.type)
 
-	def create_stock_ledger(self,entry,warehouse,type):
+	def create_stock_ledger(self, entry, warehouse, type):
 		item = entry.item_name
-		total = self.get_totals(item,warehouse)
+		total = self.get_totals(item, warehouse)
 		total_qty = total['total_qty']
 		total_value = total['total_value']
 		quantity = cint(entry.quantity)
 		if type == "Receive":
 			valuation = (total_value + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
-
 		elif type == "Consume":
-			if int(entry.quantity) > total_qty:
+			if cint(entry.quantity) > total_qty:
 				frappe.throw("Stock unavailable!")
 			quantity = -1 * quantity
 			if total_qty + quantity == 0:
 				valuation = 0
 			else:
-				valuation = (total_value + quantity * int(entry.item_rate)) / (total_qty + quantity)
+				valuation = (total_value + quantity * cint(entry.item_rate)) / (total_qty + quantity)
 
-		posting_date = self.date
-		posting_time = self.time
-		inout_rate = entry.item_rate
 		qty_change = quantity
-		voucher_type = "Stock Entry"
-		voucher_name = self.name
 		valuation = flt(valuation, precision=2)
-		self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation,voucher_type,voucher_name)
+		self.insert_sle_entry(entry, warehouse, qty_change, valuation)
 
-	def create_cancel_entry(self,entry,warehouse,type):
+	def create_cancel_entry(self, entry, warehouse, type):
 		item = entry.item_name
-		total = self.get_totals(item,warehouse)
+		total = self.get_totals(item, warehouse)
 		total_qty = total['total_qty']
 		total_value = total['total_value']
 		quantity = cint(entry.quantity)
 		if type == "Receive":
-			if int(entry.quantity) > total_qty:
+			if cint(entry.quantity) > total_qty:
 				frappe.throw(f"Items at index {entry.idx} got consumed! ")
 			quantity = -1 * quantity
 			if total_qty + quantity == 0:
 				valuation = 0
 			else:
-				valuation = (total_value + (quantity * int(entry.item_rate))) / (total_qty + quantity)
+				valuation = (total_value + (quantity * cint(entry.item_rate))) / (total_qty + quantity)
 		else:
-			valuation = (total_value + (quantity * int(entry.item_rate))) / (total_qty + quantity)
+			valuation = (total_value + (quantity * cint(entry.item_rate))) / (total_qty + quantity)
 
-		posting_date = self.date
-		posting_time = self.time
-		inout_rate = entry.item_rate
 		qty_change = quantity
-		voucher_type = "Stock Entry"
-		voucher_name = self.name
 		valuation = flt(valuation, precision=2)
-		self.insert_sle_entry(item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation,voucher_type,voucher_name)
+		self.insert_sle_entry(entry, warehouse, qty_change, valuation)
 
-	def get_totals(self,item,warehouse):
+	def get_totals(self, item, warehouse):
 		total_quantity = 0
 		total_value = 0
 		totals = frappe.db.get_all("Stock Ledger Entry", {
@@ -119,18 +98,19 @@ class StockEntry(Document):
 			"total_value": total_value
 		}
 	
-	def insert_sle_entry(self,item,warehouse,posting_date,posting_time,qty_change,inout_rate,valuation,voucher_type,voucher_name):
+
+	def insert_sle_entry(self, entry, warehouse, qty_change, valuation):
 		doc = frappe.get_doc({
 			'doctype': 'Stock Ledger Entry',
-			'item_name': item,
+			'item_name': entry.item_name,
 			'warehouse_name': warehouse,
-			'posting_date': posting_date,
-			'posting_time': posting_time,
+			'posting_date': self.date,
+			'posting_time': self.time,
 			'quantity_change': qty_change,
-			'inout_rate': inout_rate,
+			'inout_rate': entry.item_rate,
 			'valuation_rate': valuation,
-			'voucher_type': voucher_type,
-			'voucher_name': voucher_name
+			'voucher_type': "Stock Entry",
+			'voucher_name': self.name
 		})
 		doc.insert()
 	
