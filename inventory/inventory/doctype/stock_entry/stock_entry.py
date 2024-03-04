@@ -42,19 +42,17 @@ class StockEntry(Document):
 	def create_stock_ledger(self, entry, warehouse, type):
 		item = entry.item_name
 		total = self.get_totals(item, warehouse)
-		total_qty = total['total_qty']
-		total_value = total['total_value']
 		quantity = cint(entry.quantity)
 		if type == "Receive":
-			valuation = (total_value + (int(entry.quantity) * int(entry.item_rate))) / (total_qty + int(entry.quantity))
+			valuation = (total['total_value'] + (int(entry.quantity) * int(entry.item_rate))) / (total['total_qty'] + int(entry.quantity))
 		elif type == "Consume":
-			if cint(entry.quantity) > total_qty:
+			if cint(entry.quantity) > total['total_qty']:
 				frappe.throw("Stock unavailable!")
 			quantity = -1 * quantity
-			if total_qty + quantity == 0:
+			if total['total_qty'] + quantity == 0:
 				valuation = 0
 			else:
-				valuation = (total_value + quantity * cint(entry.item_rate)) / (total_qty + quantity)
+				valuation = (total['total_value'] + quantity * cint(entry.item_rate)) / (total['total_qty'] + quantity)
 
 		qty_change = quantity
 		valuation = flt(valuation, precision=2)
@@ -63,19 +61,17 @@ class StockEntry(Document):
 	def create_cancel_entry(self, entry, warehouse, type):
 		item = entry.item_name
 		total = self.get_totals(item, warehouse)
-		total_qty = total['total_qty']
-		total_value = total['total_value']
 		quantity = cint(entry.quantity)
 		if type == "Receive":
-			if cint(entry.quantity) > total_qty:
+			if cint(entry.quantity) > total['total_qty']:
 				frappe.throw(f"Items at index {entry.idx} got consumed! ")
 			quantity = -1 * quantity
-			if total_qty + quantity == 0:
+			if total['total_qty'] + quantity == 0:
 				valuation = 0
 			else:
-				valuation = (total_value + (quantity * cint(entry.item_rate))) / (total_qty + quantity)
+				valuation = (total['total_value'] + (quantity * cint(entry.item_rate))) / (total['total_qty'] + quantity)
 		else:
-			valuation = (total_value + (quantity * cint(entry.item_rate))) / (total_qty + quantity)
+			valuation = (total['total_value'] + (quantity * cint(entry.item_rate))) / (total['total_qty'] + quantity)
 
 		qty_change = quantity
 		valuation = flt(valuation, precision=2)

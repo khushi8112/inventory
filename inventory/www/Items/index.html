@@ -1,0 +1,12 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Items") }}{% endblock %}
+
+{% block page_content %}
+    <h2>List of all the items.</h2>
+    <ul>
+    {%for new in new_doc%}
+    <li>{{new.name}}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

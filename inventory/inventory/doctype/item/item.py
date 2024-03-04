@@ -2,11 +2,11 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.model.document import Document
+from frappe.website.website_generator import WebsiteGenerator
 from frappe.utils import today
 from datetime import datetime
 
-class Item(Document):
+class Item(WebsiteGenerator):
 	
 	def after_insert(self):
 		self.create_stock_entry()

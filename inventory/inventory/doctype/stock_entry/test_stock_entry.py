@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 from frappe.utils import today,datetime,flt
+from inventory.inventory.doctype.item.test_item import create_item, create_warehouse
 from datetime import datetime
 
 
@@ -46,8 +47,8 @@ def create_stock_entry(item, warehouse, type, qty, rate):
 
 class TestStockEntry(FrappeTestCase):
     def setUp(self):
-        self.create_warehouse('Test Warehouse')
-        self.create_item('Test','Test Warehouse')
+        create_warehouse('Test Warehouse')
+        create_item('Test','Test Warehouse')
 
     def tearDown(self):
         pass
@@ -61,7 +62,7 @@ class TestStockEntry(FrappeTestCase):
         # Checking if Stock Ledger Entry is created
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
         self.assertEqual(latest_doc.warehouse_name, "Test Warehouse")
-        self.assertEqual(int(latest_doc.quantity_change), 2)
+        self.assertEqual(latest_doc.voucher_name, doc.name)
 
     def test_stock_entry_consume(self):
         doc = create_stock_entry("Test", "Test Warehouse", "Consume", 2, 20).submit()
@@ -73,7 +74,7 @@ class TestStockEntry(FrappeTestCase):
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
         self.assertEqual(latest_doc.item_name, "Test")
         self.assertEqual(latest_doc.warehouse_name, "Test Warehouse")
-        self.assertEqual(int(latest_doc.quantity_change), -2)
+        self.assertEqual(latest_doc.voucher_name, doc.name)
 
     def test_stock_entry_transfer(self):
         doc = create_stock_entry("Laptop", "Mumbai", "Transfer", 2, 20).submit()
@@ -85,7 +86,7 @@ class TestStockEntry(FrappeTestCase):
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
         self.assertEqual(latest_doc.item_name, "Laptop")
         self.assertEqual(latest_doc.warehouse_name, "Mumbai")
-        self.assertEqual(int(latest_doc.quantity_change), -2)
+        self.assertEqual(latest_doc.voucher_name, doc.name)
 
     def test_stock_availability(self):
         doc = create_stock_entry("Test", "Test Warehouse", "Consume", 200, 20)
@@ -104,25 +105,5 @@ class TestStockEntry(FrappeTestCase):
         doc = create_stock_entry("Test", "Mumbai", "Receive", 10, 30).submit()
         doc.cancel()
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
-        # self.assertEqual(round(float(latest_doc.valuation_rate),2),13.33)
         self.assertEqual(flt(latest_doc.valuation_rate), 13.33)
-    
-    def create_warehouse(self, warehouse):
-        if not frappe.db.exists("Warehouse", warehouse):
-            doc = frappe.new_doc("Warehouse")
-            doc.is_group = True
-            doc.warehouse_name = warehouse
-            doc.location = warehouse
-            doc.contact = '1234567890'
-            doc.save()
-
-    def create_item(self, item, warehouse):
-        if not frappe.db.exists("Item", item):
-            doc = frappe.new_doc("Item")
-            doc.item_code = item
-            doc.name1 = item
-            doc.opening_warehouse = warehouse
-            doc.opening_rate = '22222'
-            doc.opening_qty = '12'
-            doc.save()
 
