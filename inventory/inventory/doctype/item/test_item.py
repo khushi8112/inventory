@@ -41,5 +41,12 @@ class TestItem(FrappeTestCase):
 
 	def test_create_stock_entry(self):
 		doc = frappe.get_last_doc("Stock Entry")
+		expected_data = frappe._dict({
+            'item_name': 'Test',
+			'quantity': '12',
+			'item_rate': '22222',
+            'target_warehouse': 'Test Warehouse'
+        })
 		item = doc.items[0]
-		self.assertEqual(item.item_name, 'Test')
+		for key in expected_data:
+			self.assertEqual(item.get(key), expected_data.get(key))
