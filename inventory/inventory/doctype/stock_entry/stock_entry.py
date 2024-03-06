@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import cint,flt
+from frappe import _
 
 class StockEntry(Document):
 
@@ -13,11 +14,11 @@ class StockEntry(Document):
 
 	def validate_item(self, item):
 		if self.type == "Receive" and not item.target_warehouse:
-			frappe.throw("Target warehouse is required.")
-		elif self.type == "Transfer" and ( not item.target_warehouse or not item.source_warehouse):
-			frappe.throw("Target warehouse and Source Warehouse both are required.")
+			frappe.throw(_("Target warehouse is required."))
+		elif self.type == "Transfer" and (not item.target_warehouse or not item.source_warehouse):
+			frappe.throw(_("Target warehouse and Source Warehouse both are required."))
 		elif self.type == "Consume" and not item.source_warehouse:
-			frappe.throw("Source Warehouse is required")
+			frappe.throw(_("Source Warehouse is required"))
 
 	def on_submit(self):
 		for entry in self.items:
@@ -44,10 +45,10 @@ class StockEntry(Document):
 		total = self.get_totals(item, warehouse)
 		quantity = cint(entry.quantity)
 		if type == "Receive":
-			valuation = (total['total_value'] + (int(entry.quantity) * int(entry.item_rate))) / (total['total_qty'] + int(entry.quantity))
+			valuation = (total['total_value'] + (quantity * int(entry.item_rate))) / (total['total_qty'] + quantity)
 		elif type == "Consume":
 			if cint(entry.quantity) > total['total_qty']:
-				frappe.throw("Stock unavailable!")
+				frappe.throw(_("Stock unavailable!"))
 			quantity = -1 * quantity
 			if total['total_qty'] + quantity == 0:
 				valuation = 0
@@ -64,7 +65,7 @@ class StockEntry(Document):
 		quantity = cint(entry.quantity)
 		if type == "Receive":
 			if cint(entry.quantity) > total['total_qty']:
-				frappe.throw(f"Items at index {entry.idx} got consumed! ")
+				frappe.throw(_(f"Items at index {entry.idx} got consumed! "))
 			quantity = -1 * quantity
 			if total['total_qty'] + quantity == 0:
 				valuation = 0

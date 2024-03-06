@@ -10,14 +10,13 @@
   "item_code",
   "opening_warehouse",
   "opening_qty",
+  "image",
   "column_break_iogd",
   "name1",
   "opening_rate",
   "amended_from",
   "section_break_vsmw",
-  "description",
-  "route",
-  "published"
+  "description"
  ],
  "fields": [
   {
@@ -79,22 +78,14 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "route",
-   "fieldtype": "Data",
-   "label": "Route"
-  },
-  {
-   "default": "0",
-   "fieldname": "published",
-   "fieldtype": "Check",
-   "label": "Published"
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
   }
  ],
- "has_web_view": 1,
  "index_web_pages_for_search": 1,
- "is_published_field": "published",
  "links": [],
- "modified": "2024-03-04 14:11:53.243858",
+ "modified": "2024-03-06 15:19:07.548037",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Item",
@@ -114,7 +105,6 @@
    "write": 1
   }
  ],
- "route": "items",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

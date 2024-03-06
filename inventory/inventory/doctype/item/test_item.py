@@ -39,3 +39,7 @@ class TestItem(FrappeTestCase):
 		doc = frappe.get_last_doc("Warehouse")
 		self.assertEqual(doc.name, 'Test Warehouse')
 
+	def test_create_stock_entry(self):
+		doc = frappe.get_last_doc("Stock Entry")
+		item = doc.items[0]
+		self.assertEqual(item.item_name, 'Test')

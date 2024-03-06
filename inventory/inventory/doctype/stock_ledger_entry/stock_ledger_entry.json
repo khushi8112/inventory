@@ -8,15 +8,17 @@
  "engine": "InnoDB",
  "field_order": [
   "item_name",
-  "warehouse_name",
-  "posting_date",
-  "posting_time",
-  "column_break_drnf",
   "quantity_change",
+  "posting_date",
+  "column_break_drnf",
+  "warehouse_name",
   "inout_rate",
+  "posting_time",
   "valuation_rate",
-  "voucher_type",
-  "voucher_name"
+  "section_break_dwul",
+  "voucher_name",
+  "column_break_qzgi",
+  "voucher_type"
  ],
  "fields": [
   {
@@ -76,12 +78,20 @@
    "fieldtype": "Dynamic Link",
    "label": "Voucher Name",
    "options": "voucher_type"
+  },
+  {
+   "fieldname": "section_break_dwul",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qzgi",
+   "fieldtype": "Column Break"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-28 11:20:38.940455",
+ "modified": "2024-03-06 14:45:04.885662",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Stock Ledger Entry",

@@ -3,10 +3,21 @@
 {% block title %}{{ _("Items") }}{% endblock %}
 
 {% block page_content %}
-    <h2>List of all the items.</h2>
-    <ul>
-    {%for new in new_doc%}
-    <li>{{new.name}}</li>
+    <u><h1>ITEMS</h2></u>  
+    <div>
+    {%for item in items%}
+    <div style="border: 1px solid black; display:inline-flex;">
+        <div style="padding: 10px;">
+            <img src="{{ item.image }}" width = "200" height = "200"/>
+        </div>
+        <div style="border: 1px solid black; padding: 10px;">
+            <p>Item: {{ item.name1 }}</p>
+            <p>Warehouse: {{ item.opening_warehouse }}</p>
+            <p>Warehouse: {{ item.opening_rate }}</p>
+        </div>
+    </div>
+    <br>
+    <br>
     {% endfor %}
-    </ul>
+    </div>
 {% endblock %}

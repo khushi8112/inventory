@@ -20,6 +20,7 @@
    "label": "Quantity"
   },
   {
+   "fetch_from": "item_name.opening_rate",
    "fieldname": "item_rate",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -50,7 +51,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-02-21 12:19:50.608685",
+ "modified": "2024-03-06 14:25:49.638188",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Stock Entry Items",
