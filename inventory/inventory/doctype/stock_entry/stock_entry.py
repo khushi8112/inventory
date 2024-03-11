@@ -45,7 +45,7 @@ class StockEntry(Document):
 		total = self.get_totals(item, warehouse)
 		quantity = cint(entry.quantity)
 		if type == "Receive":
-			valuation = (total['total_value'] + (quantity * int(entry.item_rate))) / (total['total_qty'] + quantity)
+			valuation = (total['total_value'] + (quantity * cint(entry.item_rate))) / (total['total_qty'] + quantity)
 		elif type == "Consume":
 			if cint(entry.quantity) > total['total_qty']:
 				frappe.throw(_("Stock unavailable!"))
@@ -54,7 +54,6 @@ class StockEntry(Document):
 				valuation = 0
 			else:
 				valuation = (total['total_value'] + quantity * cint(entry.item_rate)) / (total['total_qty'] + quantity)
-
 		qty_change = quantity
 		valuation = flt(valuation, precision=2)
 		self.insert_sle_entry(entry, warehouse, qty_change, valuation)

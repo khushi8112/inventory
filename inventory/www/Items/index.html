@@ -1,23 +1,24 @@
 {% extends "templates/web.html" %}
 
-{% block title %}{{ _("Items") }}{% endblock %}
+{% block title %}
+    {{ _("Items") }}
+{% endblock %}
 
 {% block page_content %}
-    <u><h1>ITEMS</h2></u>  
-    <div>
-    {%for item in items%}
-    <div style="border: 1px solid black; display:inline-flex;">
+    <u><h1> ITEMS </h2></u>  
+    {% for item in items %}
+    <div style = "border: 1px solid rgb(190, 187, 187); display: inline-block; border-radius: 15px;">
         <div style="padding: 10px;">
-            <img src="{{ item.image }}" width = "200" height = "200"/>
+            <img src = "{{ item.image }}" width = "200" height = "200"/>
         </div>
-        <div style="border: 1px solid black; padding: 10px;">
-            <p>Item: {{ item.name1 }}</p>
-            <p>Warehouse: {{ item.opening_warehouse }}</p>
-            <p>Warehouse: {{ item.opening_rate }}</p>
+        <div style = "padding: 10px">
+            <center>
+                <p>{{ item.name1 }}</p>
+                <p>${{ item.opening_rate }}</p>
+            </center>
         </div>
     </div>
     <br>
     <br>
     {% endfor %}
-    </div>
 {% endblock %}

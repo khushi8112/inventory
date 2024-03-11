@@ -77,15 +77,17 @@ class TestStockEntry(FrappeTestCase):
         self.assertEqual(latest_doc.voucher_name, doc.name)
 
     def test_stock_entry_transfer(self):
-        doc = create_stock_entry("Laptop", "Mumbai", "Transfer", 2, 20).submit()
+        create_warehouse("My Warehouse")
+        create_item("Camera", "My Warehouse")
+        doc = create_stock_entry("Camera", "My Warehouse", "Transfer", 2, 20).submit()
         # Checking if Stock Entry is created
         latest_doc = frappe.db.exists("Stock Entry", doc.name)
         self.assertTrue(latest_doc)
 
         # Checking if Stock Ledger Entry is created
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
-        self.assertEqual(latest_doc.item_name, "Laptop")
-        self.assertEqual(latest_doc.warehouse_name, "Mumbai")
+        self.assertEqual(latest_doc.item_name, "Camera")
+        self.assertEqual(latest_doc.warehouse_name, "My Warehouse")
         self.assertEqual(latest_doc.voucher_name, doc.name)
 
     def test_stock_availability(self):
@@ -93,16 +95,18 @@ class TestStockEntry(FrappeTestCase):
         self.assertRaises(frappe.ValidationError,doc.submit)
 
     def test_valuation(self):
-        doc = create_stock_entry("Main Item", "Main", "Receive", 8, 10).submit()
-        doc = create_stock_entry("Main Item", "Main", "Receive", 4, 20).submit()
+        create_warehouse("My Warehouse")
+        create_item("My Item", "My Warehouse")
+        doc = create_stock_entry("My Item", "My Warehouse", "Receive", 8, 1500).submit()
+        doc = create_stock_entry("My Item", "My Warehouse", "Receive", 4, 1800).submit()
         doc = frappe.get_last_doc("Stock Ledger Entry")
-
-        self.assertEqual(round(float(doc.valuation_rate),2),13.33)
+        self.assertEqual(flt((doc.valuation_rate),2),1800)
 
     def test_on_cancel_valuation(self):
-        doc = create_stock_entry("Test", "Mumbai", "Receive", 8, 10).submit()
-        doc = create_stock_entry("Test", "Mumbai", "Receive", 4, 20).submit()
-        doc = create_stock_entry("Test", "Mumbai", "Receive", 10, 30).submit()
+        create_warehouse("My Warehouse")
+        doc = create_stock_entry("Test", "My Warehouse", "Receive", 8, 10).submit()
+        doc = create_stock_entry("Test", "My Warehouse", "Receive", 4, 20).submit()
+        doc = create_stock_entry("Test", "My Warehouse", "Receive", 10, 30).submit()
         doc.cancel()
         latest_doc = frappe.get_last_doc("Stock Ledger Entry")
         self.assertEqual(flt(latest_doc.valuation_rate), 13.33)
